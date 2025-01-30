@@ -5,8 +5,9 @@ from pathlib import Path
 
 filepaths = glob.glob(pathname="invoices/*.xlsx")
 
+
 for filepath in filepaths:
-    df = pd.read_excel(filepath)
+    df = pd.read_excel(filepath, sheet_name="Sheet 1")
     pdf = FPDF(orientation="P", unit="mm", format="A4")
     pdf.add_page()
     pdf.set_font(family="Times", size=16, style="B")
@@ -46,7 +47,6 @@ for filepath in filepaths:
         new_y=YPos.NEXT,
     )
 
-    df = pd.read_excel(filepath, sheet_name="Sheet 1")
     cols = [col.replace("_", " ").title() for col in df.columns]
 
     pdf.set_font(family="Times", size=11, style="B")
@@ -79,5 +79,33 @@ for filepath in filepaths:
             new_x=XPos.LMARGIN,
             new_y=YPos.NEXT,
         )
+
+    pdf.set_font(family="Times", size=10)
+    pdf.set_text_color(80, 80, 80)
+    pdf.cell(w=30, h=8, text="", border=1)
+    pdf.cell(w=50, h=8, text="", border=1)
+    pdf.cell(w=40, h=8, text="", border=1)
+    pdf.cell(w=30, h=8, text="", border=1)
+    pdf.cell(
+        w=30,
+        h=8,
+        text=str(df["total_price"].sum()),
+        border=1,
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+
+    pdf.set_font(family="Times", size=10, style="B")
+    pdf.cell(
+        w=0,
+        h=8,
+        text=f"The total price is {df["total_price"].sum()}.",
+        new_x=XPos.LMARGIN,
+        new_y=YPos.NEXT,
+    )
+
+    pdf.set_font(family="Times", size=14, style="B")
+    pdf.cell(w=30, h=8, text="PythonHow")
+    pdf.image("pythonhow.png", w=10)
 
     pdf.output(f"PDFs/{filename}.pdf")
